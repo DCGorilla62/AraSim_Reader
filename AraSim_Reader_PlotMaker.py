@@ -123,16 +123,8 @@ print(source_dict)
 print('#'*28)
 print('\n')
 
-source_names = list(source_dict.keys())
-for i in range(len(source_names)):
-        source_names[i] = source_dict[source_names[i]][0].split('.')[-4]
-#print(source_names)
 
-
-# source_names = list(data_dict.keys())
-# print(source_names)
-# print(source_dict[source_names[0]])
-#exit()
+# #source_names = list(data_dict.keys())
 # source_names= []
 # print(source_dict.keys())
 
@@ -208,20 +200,15 @@ for i in range(len(source_dict.keys())):
         
         #basic info of data
         totalEvents = SimTree.GetEntries()
-        # key = []
-        # key =  list(source_dict)[i]
+        key = []
+        key =  list(source_dict)[i]
         
-        print('\033[1;37m{0}\033[0;0m'.format(source_names[i]))
+        print('\033[1;37m{0}\033[0;0m'.format(key))
         print('Total Events: {0}'.format(totalEvents))
         print('#'*50)
-        var_dict['Total_Events'] = []
-        var_dict['Total_Events'] = totalEvents
-        var_dict['Total_Weights'] = []
         
-        #print(SimTree.GetEntry(0))
-        #print(SimTree.GetEntry(1))
-        #print(i)
-        #print(type(SimTree))
+        print(i)
+        print(type(SimTree))
         #print(SimTree)
         #SimTree.Print()
 ##Beaks here##
@@ -229,8 +216,6 @@ for i in range(len(source_dict.keys())):
         for j in range(totalEvents):
                 #print(j)
                 SimTree.GetEntry(j)
-                var_dict['Total_Weights'].append(eventPtr.Nu_Interaction[0].weight)
-
                 #var_dict['trigg_weight']
                 #all_weight = eventPtr.Nu_Interaction[0].weight
                 #Selecting only triggered events and a weight between 0 and 1
@@ -466,7 +451,7 @@ for i in range(len(source_dict.keys())):
                                                 
         
         #end of loop                                                    
-        data_dict['{0}'.format(source_names[i])] = var_dict
+        data_dict['{0}'.format(list(source_dict.keys())[i])] = var_dict
         print("#"*28)
         print('\n')
 
@@ -480,7 +465,6 @@ print('\n')
 
 #print(data_dict['source_1']['distance'])
 #exit()
-
 #######################################
 ###Plots
 #######################################
@@ -488,7 +472,7 @@ print('#'*50)
 print("Now lets make some pots!")
 print('#'*50)
 
-#source_names = list(data_dict.keys())
+source_names = list(data_dict.keys())
 
 
 ##
@@ -539,9 +523,6 @@ for i in range(len(source_names)):
 #print(custom_lines_color)
 #exit()
 
-
-
-
 #Variable arrays for plotting
 hist_vars = ['rec_ang','theta_rec','view_ang','launch_ang','reflect_ang',
              'nnu_theta', 'nnu_phi',
@@ -561,37 +542,36 @@ ang_strings = ['ang', 'theta', 'phi']
 
 ####Defining plotting functions
 
-def hist_maker(hist_var, source, color, fontsize=12, makelabel=False):
+def hist_maker(hist_var, fontsize=12, makelabel=False):
         #print(hist_var)
-        #for i in range(len(source_names)):
+        for i in range(len(source_names)):
                 #print("Plotting...")
                 #print(source_names[i])
                 #print("...")
-        try:    
-                if 'ang' in hist_var or 'theta' in hist_var or 'phi' in hist_var:
-                        plt.hist(np.cos(data_dict[source]['{0}_0'.format(hist_var)]), 
-                                 weights=data_dict[source]['weight'],bins=bin_cos, density=False, 
-                                 histtype='step', color=color, ls='-', label=str(source)+' direct')
-                        plt.hist(np.cos(data_dict[source]['{0}_1'.format(hist_var)]), 
-                                 weights=data_dict[source]['weight'], bins=bin_cos, density=False, 
-                                 histtype='step', color=color, ls='--', label=str(source)+' refracted')
-                        plt.xlabel("Cos({0})".format(hist_var), fontsize=fontsize)
+                try:    
+                        if 'ang' in hist_var or 'theta' in hist_var or 'phi' in hist_var:
+                                plt.hist(np.cos(data_dict[source_names[i]]['{0}_0'.format(hist_var)]), 
+                                         weights=data_dict[source_names[i]]['weight'],bins=bin_cos, density=False, 
+                                         histtype='step', color=colors[i], ls='-', label=str(source_names[i])+' direct')
+                                plt.hist(np.cos(data_dict[source_names[i]]['{0}_1'.format(hist_var)]), 
+                                         weights=data_dict[source_names[i]]['weight'], bins=bin_cos, density=False, 
+                                         histtype='step', color=colors[i], ls='--', label=str(source_names[i])+' refracted')
+                                plt.xlabel("Cos({0})".format(hist_var), fontsize=fontsize)
+                                
+                        else:
+                                plt.hist(data_dict[source_names[i]]['{0}_0'.format(hist_var)], 
+                                         weights=data_dict[source_names[i]]['weight'],bins=bindistance, density=False, 
+                                         histtype='step', color=colors[i], ls='-', label=str(source_names[i])+' direct')
+                                plt.hist(data_dict[source_names[i]]['{0}_1'.format(hist_var)], 
+                                         weights=data_dict[source_names[i]]['weight'], bins=bindistance, density=False, 
+                                         histtype='step', color=colors[i], ls='--', label=str(source_names[i])+' refracted')
+                                plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
                         
-                else:
-                        plt.hist(data_dict[source]['{0}_0'.format(hist_var)], 
-                                 weights=data_dict[source]['weight'],bins=bindistance, density=False, 
-                                 histtype='step', color=color, ls='-', label=str(source)+' direct')
-                        plt.hist(data_dict[source]['{0}_1'.format(hist_var)], 
-                                 weights=data_dict[source]['weight'], bins=bindistance, density=False, 
-                                 histtype='step', color=color, ls='--', label=str(source)+' refracted')
-                        plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
-                        
-                plt.ylabel("Events", fontsize=fontsize)
-                plt.grid(linestyle='--')
-                plt.tight_layout()
-                if makelabel is True:
-                        legend = plt.legend(custom_lines_color, legend_names, loc='best')
-                        plt.gca().add_artist(legend)
+                        plt.ylabel("Events", fontsize=fontsize)
+                        plt.grid(linestyle='--')
+                        if makelabel is True:
+                                legend = plt.legend(custom_lines_color, legend_names, loc='best')
+                                plt.gca().add_artist(legend)
                                 #print(legend)
                         # else:
                         #         continue
@@ -599,70 +579,68 @@ def hist_maker(hist_var, source, color, fontsize=12, makelabel=False):
                     
                         #plt.savefig('test_plots/Hist_{0}_0_{0}_1_.png'.format(hist_var),dpi=300)
   
-        except KeyError:
-                
-                if 'ang' in hist_var or 'theta' in hist_var or 'phi' in hist_var:
-                        plt.hist(np.cos(data_dict[source]['{0}'.format(hist_var)]), 
-                                 weights=data_dict[source]['weight'], bins=bin_cos, density=False, 
-                                 histtype='step', color=color, ls='-', label=str(source))
-                        plt.xlabel("Cos({0})".format(hist_var), fontsize=fontsize)
-                        #legend = plt.legend(custom_legend, source_names, loc='upper left')
+                except KeyError:
                         
-                elif 'weight' in hist_var:
-                        plt.hist(data_dict[source]['{0}'.format(hist_var)], 
-                                 log=True, density=False, 
-                                 histtype='step', color=color, ls='-', label=str(source))#, bins =40)
-                        plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
-                        #legend = plt.legend(custom_legend, source_names, loc='upper center')
+                        if 'ang' in hist_var or 'theta' in hist_var or 'phi' in hist_var:
+                                plt.hist(np.cos(data_dict[source_names[i]]['{0}'.format(hist_var)]), 
+                                         weights=data_dict[source_names[i]]['weight'], bins=bin_cos, density=False, 
+                                         histtype='step', color=colors[i], ls='-', label=str(source_names[i]))
+                                plt.xlabel("Cos({0})".format(hist_var), fontsize=fontsize)
+                                #legend = plt.legend(custom_legend, source_names, loc='upper left')
+                                
+                        elif 'weight' in hist_var:
+                                plt.hist(data_dict[source_names[i]]['{0}'.format(hist_var)], 
+                                         log=True, density=False, 
+                                         histtype='step', color=colors[i], ls='-', label=str(source_names[i]))#, bins =40)
+                                plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
+                                #legend = plt.legend(custom_legend, source_names, loc='upper center')
+
+                        elif 'ShowerEnergy' in hist_var:
+                                plt.hist(data_dict[source_names[i]]['{0}'.format(hist_var)],
+                                         density=False, weights=data_dict[source_names[i]]['weight'],
+                                         histtype='step', log=True, 
+                                         color=colors[i], ls='-', label=str(source_names[i]))#, bins= )
+                                plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
+                                #legend = plt.legend(custom_legend, source_names, loc='upper left')
+
+                        elif 'depth' in hist_var or 'distance' in hist_var:
+                                plt.hist(data_dict[source_names[i]]['{0}'.format(hist_var)],
+                                         density=False, weights=data_dict[source_names[i]]['weight'],
+                                         histtype='step', 
+                                         color=colors[i], ls='-', label=str(source_names[i]), bins= 40)
+                                plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
+                                #legend = plt.legend(custom_legend, source_names, loc='upper left')
                         
-                elif 'ShowerEnergy' in hist_var:
-                        plt.hist(data_dict[source]['{0}'.format(hist_var)],
-                                 density=False, weights=data_dict[source]['weight'],
-                                 histtype='step', log=True, 
-                                 color=color, ls='-', label=str(source))#, bins= )
-                        plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
-                        #legend = plt.legend(custom_legend, source_names, loc='upper left')
+                        else:
+                                plt.hist(data_dict[source_names[i]]['{0}'.format(hist_var)], 
+                                         weights=data_dict[source_names[i]]['weight'],density=False, 
+                                         histtype='step', color=colors[i], ls='-', label=str(source_names[i]))#, bins= )
+                                plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
+                                #legend = plt.legend(custom_legend, source_names, loc='best')
+        
+                        plt.ylabel("Events", fontsize=fontsize)
+                        plt.grid(linestyle='--')
+                        #print(legend)
+                        if makelabel is True:
+                                legend = plt.legend(custom_lines_color, legend_names, loc='best')
+                                plt.gca().add_artist(legend)
+                        # if makelabel is True:
+                        #         plt.gca().add_artist(legend)
+                        # else:
+                        #         continue
+                        # #plt.tight_layout() 
+                        # print(makelabel)
                         
-                elif 'depth' in hist_var or 'distance' in hist_var:
-                        plt.hist(data_dict[source]['{0}'.format(hist_var)],
-                                 density=False, weights=data_dict[source]['weight'],
-                                 histtype='step', 
-                                 color=color, ls='-', label=str(source), bins= 40)
-                        plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
-                        #legend = plt.legend(custom_legend, source_names, loc='upper left')
-                        
-                else:
-                        plt.hist(data_dict[source]['{0}'.format(hist_var)], 
-                                 weights=data_dict[source]['weight'],density=False, 
-                                 histtype='step', color=color, ls='-', label=str(source))#, bins= )
-                        plt.xlabel("{0}".format(hist_var), fontsize=fontsize)
-                        #legend = plt.legend(custom_legend, source_names, loc='best')
-                        
-                plt.ylabel("Events", fontsize=fontsize)
-                plt.grid(linestyle='--')
-                plt.tight_layout()
-                #print(legend)
-                if makelabel is True:
-                        legend = plt.legend(custom_lines_color, legend_names, loc='best')
-                        plt.gca().add_artist(legend)
-                
-                # if makelabel is True:
-                #         plt.gca().add_artist(legend)
-                # else:
-                #         continue
-                # #plt.tight_layout() 
-                # print(makelabel)
-                
-                #plt.savefig('test_plots/Hist_{0}.png'.format(hist_var),dpi=300)
+                        #plt.savefig('test_plots/Hist_{0}.png'.format(hist_var),dpi=300)
                                         
   
 scatter_vars = ['distance', 'depth', 'dist_0', 'rec_ang_0', 'theta_rec_0']
-def scatter_maker(var1, var2, source, color, fontsize=12):
+def scatter_maker(var1, var2, source, fontsize=12):
         #print("Plotting...")
         if 'ang' in var2 or 'theta' in var2 or 'phi' in var2:
                 plt.scatter(data_dict[source]['{0}'.format(var1)],
                             np.cos(data_dict[source]['{0}'.format(var2)]), 
-                            s=1.0, alpha=0.25, color=color, label=str(source))
+                            s=1.0, alpha=0.25, color=colors[i], label=str(source))
                             
                 plt.xlabel("{0}".format(var1), fontsize=fontsize)
                 plt.ylabel("Cos({0})".format(var2), fontsize=fontsize)
@@ -724,52 +702,25 @@ def diff_hist(var1, var2, source1, source2, fontsize=12):
                 print("We can't make a 2D histogram showing a difference, if we only have one dataset...")
 
 ##actual plotting
-##################
-#####Plotting#####
-####################
 
 print("Histograms!")
-print("All at once!")
-for j in range(len(hist_vars)):
+for i in range(len(hist_vars)):
+        plt.figure(i, figsize=(8,6))
         print("Plotting...")
-        plt.figure(j, figsize=(8,6))
-        for i in range(len(source_names)):
-                #hist_maker(hist_vars[j], source_names[0], colors[0], makelabel=True)
-                hist_maker(hist_vars[j], source_names[i], colors[i])#, makelabel=True)
-                plt.title("{0}".format(data_dict[source_names[i]]['Total_Events']))
-        plt.savefig('test_plots/Hist_{0}_All.png'.format(hist_vars[j]),dpi=300)
+        hist_maker(hist_vars[i], makelabel=True)
+        #plt.gca().add_artist(legend1)
+        plt.savefig('test_plots/Hist_{0}.png'.format(hist_vars[i]),dpi=300)
         plt.clf()
-
-print("Bicone vs. Rest...")
-for j in range(len(hist_vars)):
-        print("Plotting...")
-        plt.figure(j, figsize=(8,6))
-        for i in range(1, len(source_names)):
-                hist_maker(hist_vars[j], source_names[0], colors[0])#, makelabel=True)
-                hist_maker(hist_vars[j], source_names[i], colors[i])#, makelabel=True)
-                plt.title("{0}".format(data_dict[source_names[i]]['Total_Events']))
-                plt.savefig('test_plots/Hist_{0}_{1}_{2}.png'.format(hist_vars[j],source_names[0],source_names[i]),dpi=300)
-                plt.clf()
-
-
-# for i in range(len(hist_vars)):
-#         plt.figure(i, figsize=(8,6))
-#         print("Plotting...")
-#         hist_maker(hist_vars[i], makelabel=True)
-#         #plt.gca().add_artist(legend1)
-#         plt.savefig('test_plots/Hist_{0}.png'.format(hist_vars[i]),dpi=300)
-#         plt.clf()
-# print("Done!")
+print("Done!")
 
 print("Scatter Plots!")
 for i in range(len(source_names)):
         print("Plotting...")
         plt.figure(i, figsize=(8,6))
-        scatter_maker(scatter_vars[0], scatter_vars[1], source_names[i], colors[i])
-        plt.title("{0}".format(data_dict[source_names[i]]['Total_Events']))
+        scatter_maker(scatter_vars[0], scatter_vars[1], source_names[i])
         plt.savefig('test_plots/Scatter_{2}_{0}_{1}_.png'.format(scatter_vars[0], 
                                                                  scatter_vars[1], 
-                                                                 source_names[i], colors[i]), dpi=300)
+                                                                 source_names[i]), dpi=300)
         plt.clf()
 print("Done!")
  
@@ -806,30 +757,27 @@ hist_vars = ['rec_ang','theta_rec','view_ang','launch_ang','reflect_ang',
 
 
 print("PDF of Histograms")
-#print("Plotting...")
+print("Plotting...")
 #making pdfs of all histogram
 plt.figure(1001, figsize=(8.5,11))
-plt.suptitle('All sources', fontsize=16)
 #plt.subplots(4,2)
-for i in range(len(source_names)):
-        print("Plotting...")
-        plt.subplot(3, 2, 1)
-        hist_maker('nnu_theta', source_names[i], colors[i], fontsize=8)# makelabel=False)
-        #plt.gca().add_artist(legend)
-        plt.subplot(3, 2, 2)
-        hist_maker('theta_rec', source_names[i], colors[i], fontsize=8)# makelabel=False)
-        #plt.gca().add_artist(legend)
-        plt.subplot(3, 2, 3)
-        hist_maker('ShowerEnergy', source_names[i], colors[i], fontsize=8)# makelabel=False)
-        #plt.gca().add_artist(legend)
-        plt.subplot(3, 2, 4)
-        hist_maker('weight', source_names[i], colors[i], fontsize=8)# makelabel=False)
-        #plt.gca().add_artist(legend)
-        plt.subplot(3, 2, 5)
-        hist_maker('dist', source_names[i], colors[i], fontsize=8)# makelabel=False)
-        #plt.gca().add_artist(legend)
-        plt.subplot(3, 2, 6)
-        hist_maker('depth', source_names[i], colors[i], fontsize=8)# makelabel=False)
+plt.subplot(3, 2, 1)
+hist_maker('nnu_theta', fontsize=8)# makelabel=False)
+#plt.gca().add_artist(legend)
+plt.subplot(3, 2, 2)
+hist_maker('theta_rec', fontsize=8)# makelabel=False)
+#plt.gca().add_artist(legend)
+plt.subplot(3, 2, 3)
+hist_maker('ShowerEnergy', fontsize=8)# makelabel=False)
+#plt.gca().add_artist(legend)
+plt.subplot(3, 2, 4)
+hist_maker('weight', fontsize=8)# makelabel=False)
+#plt.gca().add_artist(legend)
+plt.subplot(3, 2, 5)
+hist_maker('dist', fontsize=8)# makelabel=False)
+#plt.gca().add_artist(legend)
+plt.subplot(3, 2, 6)
+hist_maker('depth', fontsize=8)# makelabel=False)
 #plt.gca().add_artist(legend)
 #plt.subplot(4, 2, 7)
 #plt.clf()
@@ -838,147 +786,85 @@ for i in range(len(source_names)):
 #plt.gca().add_artist(legend_1)
 #plt.remove(legend_1)
 #remove(legned_1)
-plt.savefig('test_plots/All_Sources_Histograms.pdf', dpi=300)
-plt.clf()
+plt.savefig('test_plots/Testing_Histograms.pdf', dpi=300)
 print("Done!")
-
-
-
-for i in range(1,len(source_names)):
-        print("Plotting...")
-        plt.figure(1001, figsize=(8.5,11))
-        plt.suptitle('{0} and {1}'.format(source_names[0],source_names[i]), fontsize=16)
-
-        plt.subplot(3, 2, 1)
-        hist_maker('nnu_theta', source_names[0], colors[0], fontsize=8)# makelabel=False)
-        hist_maker('nnu_theta', source_names[i], colors[i], fontsize=8)# makelabel=False)
-
-        plt.subplot(3, 2, 2)
-        hist_maker('theta_rec', source_names[0], colors[0], fontsize=8)# makelabel=False)
-        hist_maker('theta_rec', source_names[i], colors[i], fontsize=8)# makelabel=False)
-
-        plt.subplot(3, 2, 3)
-        hist_maker('ShowerEnergy', source_names[0], colors[0], fontsize=8)# makelabel=False)
-        hist_maker('ShowerEnergy', source_names[i], colors[i], fontsize=8)# makelabel=False)
-
-        plt.subplot(3, 2, 4)
-        hist_maker('weight', source_names[0], colors[0], fontsize=8)# makelabel=False)
-        hist_maker('weight', source_names[i], colors[i], fontsize=8)# makelabel=False)
-
-        plt.subplot(3, 2, 5)
-        hist_maker('dist', source_names[0], colors[0], fontsize=8)# makelabel=False)
-        hist_maker('dist', source_names[i], colors[i], fontsize=8)# makelabel=False)
-
-        plt.subplot(3, 2, 6)
-        hist_maker('depth', source_names[0], colors[0], fontsize=8)# makelabel=False)
-        hist_maker('depth', source_names[i], colors[i], fontsize=8)# makelabel=False)
-
-        plt.savefig('test_plots/Histograms_{0}_{1}.pdf'.format(source_names[0],source_names[i], dpi=300))
-        plt.clf()
-
-print("Done!")
-
 
 
 #Doing it for all in a for loop
-#scatter_vars = ['distance', 'depth', 'dist_0', 'rec_ang_0']
+scatter_vars = ['distance', 'depth', 'dist_0', 'rec_ang_0']
 print("PDF of scatter plots, 2D Histograms, and comparison 2D Histograms")
-for i in range(1,len(source_names)):
-        print("Plotting...")
-        plt.figure(20001, figsize=(8.5,11))
-        plt.suptitle('{0} and {1}'.format(source_names[0],source_names[i]), fontsize=16)
+print("Plotting...")
 
-        plt.subplot(3,2,1)
-        scatter_maker('dist_0', 'theta_rec_0', source_names[0], colors[0], fontsize=8)
-        plt.subplot(3, 2, 3)
-        multi_hist('dist_0', 'theta_rec_0', source_names[0], fontsize=8)
-        
-        plt.subplot(3, 2, 2)
-        scatter_maker('dist_0', 'theta_rec_0', source_names[i], colors[i], fontsize=8)
-        plt.subplot(3,2,4)
-        multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-
-        plt.subplot(3,1,3)
-        diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
-        plt.savefig('test_plots/MultiHist_{0}_{1}.pdf'.format(source_names[0],source_names[i]), dpi=300)
-        plt.clf()
-print("Done!") 
-
-
-        
-#print(range(3,len(source_names)))
 #plt.subplots(4,len(source_names))
-# if len(source_names) > 3 :
-#         for i in range(3):
-#                 print("Plotting...")
-#                 print(i)
-#                 plt.figure(2001, figsize=(8.5,11))
-#                 plt.subplot(3, 3, i+1)
-#                 scatter_maker('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-#                 # scatter_maker('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
-#                 print(source_names[i])
-#                 plt.subplot(3, 3, i+4)
-#                 multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-#                 # multi_hist('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
-#                 # plt.subplot(3, len(source_names)-1, i+2*(len(source_names)-1)#+ 2*len(source_names))
-#                 # multi_hist(scatter_vars[2], scatter_vars[3], source_names[i-1], fontsize=10)
-#                 print('last plot..')        
-#                 #if i < len(source_names) and len(source_names) > 1:
-#                 plt.subplot(3, 3, i+7)#+ 2*len(source_names))
-#                         #print(i)
-#                         # diff_hist('dist_0', 'rec_ang_0', source_names[0], source_names[i], fontsize=8)
-#                 diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
-#         plt.savefig('test_plots/All_Multi_1.pdf', dpi=300)
-#         plt.clf()
-#         print("Done!") 
+if len(source_names) > 3:
+        for i in range(3):
+                print("Plotting...")
+                print(i)
+                plt.figure(2001, figsize=(8.5,11))
+                plt.subplot(3, 3, i+1)
+                scatter_maker('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
+                # scatter_maker('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
+                print(source_names[i])
+                plt.subplot(3, 3, i+4)
+                multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
+                # multi_hist('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
+                # plt.subplot(3, len(source_names)-1, i+2*(len(source_names)-1)#+ 2*len(source_names))
+                # multi_hist(scatter_vars[2], scatter_vars[3], source_names[i-1], fontsize=10)
+                print('last plot..')        
+                #if i < len(source_names) and len(source_names) > 1:
+                plt.subplot(3, 3, i+7)#+ 2*len(source_names))
+                        #print(i)
+                        # diff_hist('dist_0', 'rec_ang_0', source_names[0], source_names[i], fontsize=8)
+                diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
+                plt.savefig('test_plots/All_Multi_1.pdf', dpi=300)
+                plt.clf()
 
-#         for i in range(3,len(source_names)):
-#                 print("Plotting...")
-#                 print(i)
-#                 plt.figure(2001, figsize=(8.5,11))
-#                 plt.subplot(3, len(source_names)-3, i+1)
-#                 scatter_maker('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-#                 # scatter_maker('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
-#                 print(source_names[i])
-#                 plt.subplot(3, len(source_names)-3, i+1+len(source_names)-3)
-#                 multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-#                 # multi_hist('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
-#                 # plt.subplot(3, len(source_names)-1, i+2*(len(source_names)-1)#+ 2*len(source_names))
-#                 # multi_hist(scatter_vars[2], scatter_vars[3], source_names[i-1], fontsize=10)
-#                 print('last plot..')        
-#                 #if i < len(source_names) and len(source_names) > 1:
-#                 # plt.subplot(3, len(source_names)-3, i+1+2*(len(source_names)-3))#+ 2*len(source_names))
-#                 # print(i)
-#                 # # diff_hist('dist_0', 'rec_ang_0', source_names[0], source_names[i], fontsize=8)
-#                 # diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
-#         plt.savefig('test_plots/All_Multi_2.pdf', dpi=300)
-#         plt.clf()
-#         print("Done!") 
+        for i in range(3,len(source_names)):
+                print("Plotting...")
+                print(i)
+                plt.figure(2001, figsize=(8.5,11))
+                plt.subplot(3, len(source_names)-3, i+1)
+                scatter_maker('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
+                # scatter_maker('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
+                print(source_names[i])
+                plt.subplot(3, len(source_names)-3, i+1+len(source_names)-3)
+                multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
+                # multi_hist('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
+                # plt.subplot(3, len(source_names)-1, i+2*(len(source_names)-1)#+ 2*len(source_names))
+                # multi_hist(scatter_vars[2], scatter_vars[3], source_names[i-1], fontsize=10)
+                print('last plot..')        
+                #if i < len(source_names) and len(source_names) > 1:
+                plt.subplot(3, len(source_names)-3, i+1+2*(len(source_names)-3))#+ 2*len(source_names))
+                #print(i)
+                # diff_hist('dist_0', 'rec_ang_0', source_names[0], source_names[i], fontsize=8)
+                diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
+                plt.savefig('test_plots/All_Multi_2.pdf', dpi=300)
+                plt.clf()
+                print("Done!") 
 
         
-# else:
-#         for i in range(len(source_names)):
-#                 print("Plotting...")
-#                 plt.figure(2001, figsize=(8.5,11))
-#                 plt.subplot(3, len(source_names), i+1)
-#                 scatter_maker('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-#                 # scatter_maker('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
-#                 print(source_names[i])
-#                 plt.subplot(3, len(source_names), i+1+len(source_names))
-#                 multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
-#                 # multi_hist('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
-#                 # plt.subplot(3, len(source_names)-1, i+2*(len(source_names)-1)#+ 2*len(source_names))
-#                 # multi_hist(scatter_vars[2], scatter_vars[3], source_names[i-1], fontsize=10)
-#                 print('last plot..')        
-#                 #if i < len(source_names) and len(source_names) > 1:
-#                 plt.subplot(3, len(source_names), i+1+2*(len(source_names)))#+ 2*len(source_names))
-#                 print(i)
-#                 # diff_hist('dist_0', 'rec_ang_0', source_names[0], source_names[i], fontsize=8)
-#                 diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
+else:
+        for i in range(len(source_names)):
+                print("Plotting...")
+                plt.figure(2001, figsize=(8.5,11))
+                plt.subplot(3, len(source_names), i+1)
+                scatter_maker('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
+                # scatter_maker('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
+                print(source_names[i])
+                plt.subplot(3, len(source_names), i+1+len(source_names))
+                multi_hist('dist_0', 'theta_rec_0', source_names[i], fontsize=8)
+                # multi_hist('dist_0', 'rec_ang_0', source_names[i], fontsize=8)
+                # plt.subplot(3, len(source_names)-1, i+2*(len(source_names)-1)#+ 2*len(source_names))
+                # multi_hist(scatter_vars[2], scatter_vars[3], source_names[i-1], fontsize=10)
+                print('last plot..')        
+                #if i < len(source_names) and len(source_names) > 1:
+                plt.subplot(3, len(source_names), i+1+2*(len(source_names)))#+ 2*len(source_names))
+                print(i)
+                # diff_hist('dist_0', 'rec_ang_0', source_names[0], source_names[i], fontsize=8)
+                diff_hist('dist_0', 'theta_rec_0', source_names[0], source_names[i], fontsize=8)
                                                 
-#         plt.savefig('test_plots/Testing_All_Multi.pdf', dpi=300)
-#         plt.clf()
-#         print("Done!") 
+                plt.savefig('test_plots/Testing_All_Multi.pdf', dpi=300)
+                print("Done!") 
         
                 
         
@@ -1016,53 +902,28 @@ print("Done!")
 # print(range(2))
 # print(len(range(2)))
 
-# print(custom_legend)
-# print(custom_legend[0])
-# IceVolume = (4.0/3.0)*np.pi*(3000**3)*(10**-9)
-# IceVolume = 8.4823 * np.power(10,10)#e+10
+# # print(custom_legend)
+# # print(custom_legend[0])
+IceVolume = (4.0/3.0)*np.pi*(3000**3)*(10**-9)
 
 #######################################
 ###General Info
 #######################################
-# for i in range(len(source_names)):
-#         print('#'*28)
-#         print('\033[1;37m{0}\033[0;0m'.format(source_names[i]))
-#         print('#'*28)
-#         print('\033[4;37mEvents\033[0;0m')
-#         print('Triggered: \033[1;31m{0}\033[0;0m'.format(len(data_dict[source_names[i]]['trigg'])))
-#         print('Usable: \033[1;31m{0}\033[0;0m'.format(len(data_dict[source_names[i]]['weight'])))
-#         print('Weighted: \033[1;31m{0}\033[0;0m'.format(np.sum(data_dict[source_names[i]]['weight'])))
-#         print('Effective Volume: \033[1;31m{0}\033[0;0m'.format(IceVolume * 4.0 * np.pi * (
-#                                              np.sum(data_dict[source_names[i]]['weight'])/totalEvents)))
-#         print(IceVolume)
-#         #print(source_dict.items())
-#         print(totalEvents)
-#         print('#'*50)
-#         print('\n')
-
-IceVolume = 8.4823 * 10#np.power(10,10)#e+10
 for i in range(len(source_names)):
         print('#'*28)
         print('\033[1;37m{0}\033[0;0m'.format(source_names[i]))
         print('#'*28)
-        # print('\033[4;37mEvents\033[0;0m')
-        print('Total Events: \033[1;31m{0}\033[0;0m'.format(data_dict[source_names[i]]['Total_Events']))
+        print('\033[4;37mEvents\033[0;0m')
         print('Triggered: \033[1;31m{0}\033[0;0m'.format(len(data_dict[source_names[i]]['trigg'])))
         print('Usable: \033[1;31m{0}\033[0;0m'.format(len(data_dict[source_names[i]]['weight'])))
         print('Weighted: \033[1;31m{0}\033[0;0m'.format(np.sum(data_dict[source_names[i]]['weight'])))
-        print('Effective Volume: \033[1;31m{0}\033[0;0m'.format(IceVolume * 4.0 * np.pi * (
-                np.sum(data_dict[source_names[i]]['weight'])/data_dict[source_names[i]]['Total_Events'])))
-        # print('Test Effective Volume: \033[1;31m{0}\033[0;0m'.format(IceVolume * 4.0 * np.pi * (
-        #         np.sum(data_dict[source_names[i]]['Total_Weights'])/data_dict[source_names[i]]['Total_Events'])))
-
+        print('Effective Volume: \033[1;31m{0}\033[0;0m'.format(IceVolume * (
+                                             np.sum(data_dict[source_names[i]]['weight'])/totalEvents)))
+        print(IceVolume)
+        #print(source_dict.items())
+        print(totalEvents)
         print('#'*50)
         print('\n')
-
-#exit()
-
-
-
-
 stop = timeit.default_timer()
 print('Time: \033[1;31m{0}\033[0;0m'.format(stop - start))
 exit()
@@ -1070,4 +931,4 @@ exit()
 I think this is the equation AraSim uses:
 Veff_test = IceVolume * 4. * PI * Total_Weight / (double)(settings1->NNU);
 The IceVolume would be 4/3pi*R^3, and I think R is 3000 m, and then NNU for each root file should be 30000 (so 3*10^6 for each individual)
-v'''
+'''
